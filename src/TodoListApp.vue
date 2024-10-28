@@ -2,10 +2,13 @@
 export default {
   data() {
     return {
-      msg: 'Hello World!',
       newTask: "",
-      taskList: ["task1", "task2"]
+      taskList: []
     }
+  },
+
+  mounted() { //this runs when the page (or component) loads 
+    this.loadTaskList();
   },
 
   methods: {
@@ -13,10 +16,35 @@ export default {
       if (this.newTask.trim()) {
         this.taskList.push(this.newTask);
         this.newTask = "";
+
+        this.saveTaskList();
       }
     },
+
     deleteTask(index) {
       this.taskList.splice(index, 1);
+
+      this.saveTaskList();
+    },
+
+    saveTaskList() {
+        const taskListString = JSON.stringify(this.taskList);
+        if (taskListString) {
+            localStorage.setItem("taskList", taskListString);
+            console.log("saved list: ", taskListString);
+        }
+    },
+
+    loadTaskList() {
+        const savedTaskListString = localStorage.getItem("taskList");
+        if (savedTaskListString) {
+            const newTaskList = JSON.parse(savedTaskListString);
+            this.taskList = [...newTaskList];
+            console.log("loaded list: ", savedTaskListString);
+        } else {
+            console.log("no data to load");
+        }
+        
     }
   }
 }
